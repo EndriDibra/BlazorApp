@@ -13,6 +13,10 @@ builder.Services.AddHttpClient();
 
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddBlazoredSessionStorage();
+builder.Services.AddScoped(sp => new HttpClient
+{
+    BaseAddress = new Uri("https://localhost:7028/")
+});
 
 var app = builder.Build();
 
