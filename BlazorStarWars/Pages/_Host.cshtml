@@ -1,4 +1,4 @@
-﻿@page "/"
+@page "/"
 @using Microsoft.AspNetCore.Components.Web
 @namespace BlazorStarWars.Pages
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
@@ -13,10 +13,10 @@
     <link href="css/site.css" rel="stylesheet" />
     <link href="BlazorStarWars.styles.css" rel="stylesheet" />
     <link rel="icon" type="image/png" href="favicon.png"/>
-    <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
+    <component type="typeof(HeadOutlet)" render-mode="Server" />
 </head>
 <body>
-    <component type="typeof(App)" render-mode="ServerPrerendered" />
+    <component type="typeof(App)" render-mode="Server" />
 
     <div id="blazor-error-ui">
         <environment include="Staging,Production">
