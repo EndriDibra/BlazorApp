@@ -1,0 +1,65 @@
+﻿@page "/swapi"
+
+@using System.Text.Json
+@using System.Text.Json.Serialization
+
+
+<h3>SWAPI Fetcher</h3>
+<button @onclick="FetchData">Fetch Data</button>
+
+
+@if (films != null)
+{
+    <h4>Star Wars Films</h4>
+    <table>
+        <thead>
+
+            <tr>
+                <th>Title</th>
+                <th>Episode</th>
+                <th>Director</th>
+                <th>Producer</th>
+                <th>Release Date</th>
+            </tr>
+
+        </thead>
+        <tbody>
+
+            @foreach (var film in films)
+            {
+                <tr>
+                    <td>@film.Title</td>
+                    <td>@film.EpisodeId</td>
+                    <td>@film.Director</td>
+                    <td>@film.Producer</td>
+                    <td>@film.ReleaseDate</td>
+                </tr>
+            }
+        </tbody>
+      </table>
+        
+}
+
+@code {
+
+        [Inject]
+        private HttpClient httpClient { get; set; }
+
+        private string selectedCategory = "films"; // default to "films" category
+        private List<Film> films;
+
+        protected override async Task OnInitializedAsync()
+        {
+            await FetchData();
+        }
+
+        private async Task FetchData()
+        {
+            var response = await httpClient.GetAsync($"https://swapi.dev/api/{selectedCategory}/");
+            response.EnsureSuccessStatusCode();
+
+            var responseStream = await response.Content.ReadAsStreamAsync();
+            films = await JsonSerializer.DeserializeAsync<List<Film>>(responseStream);
+        }
+}
+

@@ -1,0 +1,51 @@
+﻿@page "/favourites"
+
+@inject NavigationManager NavigationManager
+@using System.Text.Json
+@using System.Text.Json.Serialization
+@using Microsoft.AspNetCore.WebUtilities
+@inject IJSRuntime JSRuntime
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+
+<PageTitle>Favourites Page</PageTitle>
+
+<h1>Favourites Page</h1>
+
+
+@if (tableData != null)
+{
+    <table>
+        <tr>
+            <th>Planet Number</th>
+            <th>Name</th>
+        </tr>
+        
+        @foreach (var row in tableData)
+        {
+            <tr>
+                <td>@row["Planet Number"] <a href="/details">Details</a></td>
+                <td>@row["Name"]</td> 
+            </tr>
+        }
+    </table>
+}
+else
+{
+    <p>No table data found.</p>
+}
+
+@code {
+
+    private List<Dictionary<string, string>> tableData;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        var json = await LocalStorage.GetItemAsync<string>("tableData");
+
+        if (!string.IsNullOrEmpty(json))
+        {
+            tableData = JsonSerializer.Deserialize<List<Dictionary<string, string>>>(json);
+        }
+    }
+}
