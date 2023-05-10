@@ -1,38 +1,36 @@
-﻿@page "/swapi"
+@page "/swapi"
 
+@inject HttpClient Http
 @using System.Text.Json
 @using System.Text.Json.Serialization
-
+using System.Collections.Generic;
+using Newtonsoft.Json;
+using System;
 
 <h3>SWAPI Fetcher</h3>
-<button @onclick="FetchData">Fetch Data</button>
 
 
-@if (films != null)
+@if (Planets != null)
 {
     <h4>Star Wars Films</h4>
     <table>
+
         <thead>
-
             <tr>
-                <th>Title</th>
-                <th>Episode</th>
-                <th>Director</th>
-                <th>Producer</th>
-                <th>Release Date</th>
+                <th>Name</th>
+                <th>Rotation Period</th>
+                <th>Orbital Period</th>
             </tr>
-
         </thead>
+
         <tbody>
 
-            @foreach (var film in films)
+            @foreach (var planet in Planets)
             {
                 <tr>
-                    <td>@film.Title</td>
-                    <td>@film.EpisodeId</td>
-                    <td>@film.Director</td>
-                    <td>@film.Producer</td>
-                    <td>@film.ReleaseDate</td>
+                    <td>@planet.Name</td>
+                    <td>@planet.Rotation_Period</td>
+                    <td>@planet.Orbital_Period</td>
                 </tr>
             }
         </tbody>
@@ -40,26 +38,26 @@
         
 }
 
+<button @onclick="OnInitializedAsync">Fetch Data</button>
+
 @code {
 
-        [Inject]
-        private HttpClient httpClient { get; set; }
+    HttpRequestMessage requestMessage;
+    HttpResponseMessage responseMessage;
+    HttpClient http;
 
-        private string selectedCategory = "films"; // default to "films" category
-        private List<Film> films;
+    private List<Planet> Planets;
 
-        protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
+    {
+        http = new HttpClient();
+        requestMessage = new HttpRequestMessage
         {
-            await FetchData();
-        }
+            Method = HttpMethod.Get,
+            RequestUri = new Uri(@"https://swapi.dev/api/planets/3/")
+        };
 
-        private async Task FetchData()
-        {
-            var response = await httpClient.GetAsync($"https://swapi.dev/api/{selectedCategory}/");
-            response.EnsureSuccessStatusCode();
-
-            var responseStream = await response.Content.ReadAsStreamAsync();
-            films = await JsonSerializer.DeserializeAsync<List<Film>>(responseStream);
-        }
+        responseMessage = await http.SendAsync(requestMessage);
+        Planets = JsonSerializer.Deserialize<List<Planet>>(await responseMessage.Content.ReadAsStringAsync());
+    }
 }
-
