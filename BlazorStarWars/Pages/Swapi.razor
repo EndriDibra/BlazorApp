@@ -1,18 +1,17 @@
 @page "/swapi"
 
-@inject HttpClient Http
+@inject HttpClient http;
 @using System.Text.Json
 @using System.Text.Json.Serialization
-using System.Collections.Generic;
-using Newtonsoft.Json;
-using System;
+
 
 <h3>SWAPI Fetcher</h3>
+
+<button class="btn btn-success" @onclick="@GetPlanet">Fetch Data</button> <br/>
 
 
 @if (Planets != null)
 {
-    <h4>Star Wars Films</h4>
     <table>
 
         <thead>
@@ -25,7 +24,7 @@ using System;
 
         <tbody>
 
-            @foreach (var planet in Planets)
+            @foreach (var planet in @Planets)
             {
                 <tr>
                     <td>@planet.Name</td>
@@ -34,30 +33,18 @@ using System;
                 </tr>
             }
         </tbody>
+
       </table>
-        
 }
 
-<button @onclick="OnInitializedAsync">Fetch Data</button>
 
 @code {
 
-    HttpRequestMessage requestMessage;
-    HttpResponseMessage responseMessage;
-    HttpClient http;
+    List<Planet> Planets = new List<Planet>();
 
-    private List<Planet> Planets;
+    public async Task GetPlanet() {
 
-    protected override async Task OnInitializedAsync()
-    {
-        http = new HttpClient();
-        requestMessage = new HttpRequestMessage
-        {
-            Method = HttpMethod.Get,
-            RequestUri = new Uri(@"https://swapi.dev/api/planets/3/")
-        };
+        Planets = await http.GetFromJsonAsync<List<Planet>>(@"https://swapi.dev/api/planets/3/");
 
-        responseMessage = await http.SendAsync(requestMessage);
-        Planets = JsonSerializer.Deserialize<List<Planet>>(await responseMessage.Content.ReadAsStringAsync());
     }
 }
