@@ -1,7 +1,4 @@
 using Blazored.LocalStorage;
-using BlazorStarWars;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 using Blazored.SessionStorage;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddHttpClient();
-
+builder.Services.AddSingleton<HttpClient>();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddBlazoredSessionStorage();
 builder.Services.AddScoped(sp => new HttpClient
